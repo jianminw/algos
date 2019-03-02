@@ -122,7 +122,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         for location in firewall_locations:
             game_state.attempt_spawn(FILTER, location)
 
-        firewall_locations = [[1, 12], [2, 11], [4, 11], [6, 11], [8, 11], [12, 11]
+        firewall_locations = [[1, 12], [2, 11], [4, 11], [6, 11], [8, 11], [12, 11],
                               [14, 11], [19, 11], [21, 11], [23, 11], [25, 11],
                               [26, 12]]
 
