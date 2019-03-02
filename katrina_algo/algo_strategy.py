@@ -99,12 +99,12 @@ class AlgoStrategy(gamelib.AlgoCore):
         around_near_spawn = 0
         around_far_spawn = 0
         for dx in range(-3, 4):
-            for dy in range(4, 4):
+            for dy in range(4, 7):
                 nl = [self.attacker_spawn_near[0] + dx, self.attacker_spawn_near[1] + dy]
                 fl = [self.attacker_spawn_far[0] + dx, self.attacker_spawn_far[1] + dy]
-                if game_state.contains_stationary_unit(nl):
+                if game_state.game_map.in_arena_bounds(nl) and game_state.contains_stationary_unit(nl):
                     around_near_spawn += 1
-                if game_state.contains_stationary_unit(fl):
+                if game_state.game_map.in_arena_bounds(fl) and game_state.contains_stationary_unit(fl):
                     around_far_spawn += 1
         if around_near_spawn - around_far_spawn > self.switch_threshhold:
             self.switch_sides(game_state, game_state.board_units)
@@ -160,40 +160,10 @@ class AlgoStrategy(gamelib.AlgoCore):
             game_state.attempt_spawn(EMP, self.attacker_spawn_near, game_state.number_affordable(EMP))
         else:
             friendly_edges = [self.attacker_spawn_far, self.attacker_spawn_near]
-            spawn = self.rank_spawns(friendly_edges, game_state)
+            spawn = friendly_edges[random.randint(0, 1)]
             if spawn != None:
                 game_state.attempt_spawn(PING, spawn, game_state.number_affordable(PING))
         # When should we get scramblers?
-
-    def rank_spawns(self, available_spawns, game_state):
-        current_best_spawn = None
-        current_lowest_damage = -1
-        if len(available_spawns) > 0:
-            for spawn_point in available_spawns:
-                if not game_state.contains_stationary_unit(spawn_point):
-                    damage = self.damage_taken(spawn_point, game_state)
-                    if current_best_spawn == None or (damage != None and current_lowest_damage > damage):
-                        current_best_spawn = spawn_point
-                        current_lowest_damage = damage
-            return current_best_spawn
-        return None
-
-    def damage_taken(self, spawn_point, game_state):
-        spawn_edge = []
-        if spawn_point in game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT):
-            spawn_edge = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT)
-        elif spawn_edge in game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT):
-            spawn_edge = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
-        if len(spawn_edge) > 0:
-            targets = []
-            for point in spawn_edge:
-                targets.append( [27-point[0], 27-point[1]])
-            path = self.pathfinder.navigate_multiple_endpoints(spawn_point, targets, game_state)    
-            totalDamage = 0
-            for l in path:
-                for enemy_unit in game_state.get_attackers(l, 0):
-                    totalDamage += enemy_unit.damage
-            return totalDamage
 
 
     ####### Begin Bryce's functions ########
