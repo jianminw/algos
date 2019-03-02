@@ -134,7 +134,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         elif filter_wall > self.filter_wall_threshhold:
             game_state.attempt_spawn(EMP, self.attacker_spawn_near, game_state.number_affordable(EMP))
         else:
-            friendly_edges = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
+            friendly_edges = [self.attacker_spawn_far, self.attacker_spawn_near]
             spawn = self.rank_spawns(friendly_edges, game_state)
             if spawn != None:
                 game_state.attempt_spawn(PING, spawn, game_state.number_affordable(PING))
