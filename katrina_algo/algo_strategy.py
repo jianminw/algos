@@ -50,7 +50,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.filter_wall_threshhold = 7
         self.attacker_spawn_near = [24, 10]
         self.attacker_spawn_far = [3, 10]
-
+        self.repair_threshhold = 0.25
+        self.switch_threshhold = 4
 
 
     def on_turn(self, turn_state):
@@ -68,6 +69,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.get_diagnostics(game_state)
 
         self.pathfinder.initialize_map(game_state)
+
+        
 
         self.starter_strategy(game_state)
 
@@ -90,13 +93,29 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.filter_front(game_state)
         self.new_attackers(game_state)
 
+    def check_for_switch(self, game_state):
+        #basically, hit them where they are weak. 
+        #check the number of enemies around near and far spawn
+        around_near_spawn = 0
+        around_far_spawn = 0
+        for dx in range(-3, 4):
+            for dy in range(4, 4):
+                nl = [self.attacker_spawn_near[0] + dx, self.attacker_spawn_near[1] + dy]
+                fl = [self.attacker_spawn_far[0] + dx, self.attacker_spawn_far[1] + dy]
+                if game_state.contains_stationary_unit(nl):
+                    around_near_spawn += 1
+                if game_state.contains_stationary_unit(fl):
+                    around_far_spawn += 1
+        if around_near_spawn - around_far_spawn > self.switch_threshhold:
+            self.switch_sides(game_state, game_state.board_units)
 
     def filter_front(self, game_state):
         front1 = [(i, 13) for i in range(2, 26)]
         if self.attacker_spawn_far[0] < 13.5:
             front1.reverse()
-        for location in front1:
+        for location in front1[:-1]:
             game_state.attempt_spawn(FILTER, location)
+        game_state.attempt_remove(front1[-1])
 
     def new_defences(self, game_state):
         firewall_locations = [[0, 13], [1, 12],[26, 12], [27, 13]]
