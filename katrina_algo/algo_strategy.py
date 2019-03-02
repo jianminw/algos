@@ -45,6 +45,7 @@ class AlgoStrategy(gamelib.AlgoCore):
     def set_constraints(self):
         self.frontline_enemy_threshhold = 7
         self.ping_deployment_threshhold = 7
+        self.filter_wall_threshhold = 7
         self.attacker_spawn_near = [3, 10]
         self.attacker_spawn_far = [24, 10]
 
@@ -109,13 +110,56 @@ class AlgoStrategy(gamelib.AlgoCore):
         enemy_defenses = frontline_size
         enemy_defenses += len(game_state.board_units["Efront3"])
         enemy_defenses += len(game_state.board_units["Efront4"])
+        filter_wall = len(game_state.board_units["fline"])
         if frontline_size > self.frontline_enemy_threshhold:
             game_state.attempt_spawn(EMP, self.attacker_spawn_far, game_state.number_affordable(EMP))
         elif enemy_defenses < self.ping_deployment_threshhold:
-            game_state.attempt_spawn(EMP, self.attacker_spawn_far, game_state.number_affordable(PING))
-        else:
+            game_state.attempt_spawn(PING, self.attacker_spawn_far, game_state.number_affordable(PING))
+        elif fline > self.filter_wall_threshhold:
             game_state.attempt_spawn(EMP, self.attacker_spawn_near, game_state.number_affordable(EMP))
+        else:
+            friendly_edges = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
+            available_spawns = self.filter_blocked_locations(friendly_edges, game_state)
+            spawn = self.rank_spawns(available_spawns, game_state)
+            if spawn != None:
+                game_state.attempt_spawn(PING, spawn, game_state.number_affordable(PING))
         # When should we get scramblers?
+
+    def filter_blocked_locations(self, locations, game_state):
+        filtered = []
+        for location in locations:
+            if not game_state.contains_stationary_unit(location):
+                filtered.append(location)
+        return filtered
+
+    def rank_spawns(self, available_spawns, game_state):
+        current_best_spawn = None
+        current_lowest_damage = -1
+        if len(available_spawns) > 0:
+            for spawn_point in available_spawns:
+                damage = self.damage_taken(spawn_point, game_state)
+                if current_best_spawn == None or (damage != None and current_lowest_damage > damage):
+                    current_best_spawn = spawn_point
+                    current_lowest_damage = damage
+            return current_best_spawn, current_lowest_damage
+        return None, None
+
+    def damage_taken(self, spawn_point, game_state):
+        spawn_edge = []
+        if spawn_point in game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT):
+            spawn_edge = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT)
+        elif spawn_edge in game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT):
+            spawn_edge = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
+        if len(spawn_edge) > 0:
+            targets = []
+            for point in spawn_edge:
+                targets.append( [27-point[0], 27-point[1]])
+            path = self.pathfinder.navigate_multiple_endpoints(spawn_point, targets, game_state)    
+            totalDamage = 0
+            for l in path:
+                for enemy_unit in game_state.get_attackers(l, 0):
+                    totalDamage += enemy_unit.damage
+            return totalDamage
         
 
     ####### Begin Bryce's functions ########
@@ -127,7 +171,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         loc = [13, 0]
         unit = game_state.game_map.__getitem__(loc)
         units = {"D0" : [], "E0" : [], "F0" : [], "D1" : [], "E1" : [], "F1" : [],
-                "Efront1" : [], "Efront2" : [], "Efront3" : [], "Efront4" : []}
+                "Efront1" : [], "Efront2" : []}
 
         # get data on all of your squares
         try:
@@ -144,15 +188,11 @@ class AlgoStrategy(gamelib.AlgoCore):
 
                     if(game_state.HALF_ARENA <= loc[1] and loc[1] < game_state.HALF_ARENA + 4):
                         # put the front two rows into lists based on the side
-                        if(loc[1] == game_state.HALF_ARENA):
-                            units["Efront1"].append([elt.x, elt.y])
-                        elif(loc[1] == game_state.HALF_ARENA + 1):
-                            units["Efront2"].append([elt.x, elt.y])
-                        elif(loc[1] == game_state.HALF_ARENA + 2):
-                            units["Efront3"].append([elt.x, elt.y])
-                        else:
-                            units["Efront4"].append([elt.x, elt.y])
-
+                        if(loc[0] < game_state.HALF_ARENA):
+                            units["Efront1"].append((elt.x, elt.y))
+                        elif(loc[0] < game_state.HALF_ARENA + 1):
+                            units["Efront2"].append((elt.x, elt.y))
+                        elif(loc[0] <
 
                     # put this unit into the dictionary
                     units[key].append(elt)
