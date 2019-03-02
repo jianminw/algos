@@ -118,7 +118,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 game_state.attempt_spawn(FILTER, location)
 
     def new_attackers(self, game_state):
-        attacker_spawn_location = [3, 10]
         #check for which side is open, and deploy on other side?
         frontline_size = len(game_state.board_units["Efront1"]) + len(game_state.board_units["Efront2"])
         enemy_defenses = frontline_size
@@ -138,6 +137,7 @@ class AlgoStrategy(gamelib.AlgoCore):
             if spawn != None:
                 game_state.attempt_spawn(PING, spawn, game_state.number_affordable(PING))
         # When should we get scramblers?
+
     def filter_blocked_locations(self, locations, game_state):
         filtered = []
         for location in locations:
