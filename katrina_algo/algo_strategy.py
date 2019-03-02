@@ -46,6 +46,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.frontline_enemy_threshhold = 7
 
 
+
     def on_turn(self, turn_state):
         """
         This function is called every turn with the game state wrapper as
@@ -174,17 +175,17 @@ class AlgoStrategy(gamelib.AlgoCore):
                 game_state.attempt_spawn(FILTER, (27 - exit1[0], exit1[1]))
                 break
 
-            else if(elt.x == exit2[0] and elt.y == exit[1]):
+            elif(elt.x == exit2[0] and elt.y == exit[1]):
                 game_state.attempt_remove(exit2)
                 game_state.attempt_spawn(FILTER, (27 - exit2[0], exit2[1]))
                 break
 
-            else if(elt.x == exit3[0] and elt.y == exit3[1]):
+            elif(elt.x == exit3[0] and elt.y == exit3[1]):
                 game_state.attempt_remove(exit3)
                 game_state.attempt_spawn(FILTER, (27 - exit3[0], exit3[1]))
                 break
 
-            else if(elt.x == exit4[0] and elt.y == exit4[1]):
+            elif(elt.x == exit4[0] and elt.y == exit4[1]):
                 game_state.attempt_remove(exit4)
                 game_state.attempt_spawn(FILTER, (27 - exit4[0], exit4[1]))
                 break
