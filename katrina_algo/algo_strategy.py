@@ -45,6 +45,8 @@ class AlgoStrategy(gamelib.AlgoCore):
     def set_constraints(self):
         self.frontline_enemy_threshhold = 7
         self.ping_deployment_threshhold = 7
+        self.attacker_spawn_near = [3, 10]
+        self.attacker_spawn_far = [24, 10]
 
 
 
@@ -107,13 +109,13 @@ class AlgoStrategy(gamelib.AlgoCore):
         #check for which side is open, and deploy on other side?
         frontline_size = len(game_state.board_units["Efront1"]) + len(game_state.board_units["Efront2"])
         if frontline_size > self.frontline_enemy_threshhold:
-            game_state.attempt_spawn(EMP, attacker_spawn_location, game_state.number_affordable(EMP))
+            game_state.attempt_spawn(EMP, self.attacker_spawn_far, game_state.number_affordable(EMP))
         enemy_defenses = len(game_state.board_units["E1"])
         enemy_defenses += len(game_state.board_units["D1"])
         enemy_defenses += len(game_state.board_units["F1"])
         if enemy_defenses < self.ping_deployment_threshhold:
-            game_state.attempt_spawn(EMP, attacker_spawn_location, game_state.number_affordable(PING))
-
+            game_state.attempt_spawn(EMP, self.attacker_spawn_far, game_state.number_affordable(PING))
+        # When should we get scramblers?
         
 
     ####### Begin Bryce's functions ########
