@@ -134,8 +134,15 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         if game_state.number_affordable(ENCRYPTOR) > 6:
             encryt_locs = self.get_encrypt_locs(game_state)
-            good_locs = encryt_locs[:game_state.number_affordable(ENCRYPTOR) - 2]
-            game_state.attempt_spawn(ENCRYPTOR, good_locs)
+            num_encryptors = 0
+            bound = game_state.number_available(ENCRYPTOR) - 2 
+
+            for loc in encryt_locs:
+                if(game_state.can_spawn(ENCRYPTOR, loc)):
+                    game_state.attempt_spawn(ENCRYPTOR, loc)
+                    num_encryptors += 1
+                if(num_encryptors >= bound):
+                    break
 
 
     def new_attackers(self, game_state):
