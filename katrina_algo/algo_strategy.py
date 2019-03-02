@@ -48,8 +48,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.frontline_enemy_threshhold = 7
         self.ping_deployment_threshhold = 7
         self.filter_wall_threshhold = 7
-        self.attacker_spawn_near = [3, 10]
-        self.attacker_spawn_far = [24, 10]
+        self.attacker_spawn_near = [24, 10]
+        self.attacker_spawn_far = [3, 10]
 
 
 
@@ -61,7 +61,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         unit deployments, and transmitting your intended deployments to the
         game engine.
         """
-        game_state = gamelib.AdvancedGameState(self.config, turn_state)
+        game_state = gamelib.AdvancedGameState  (self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
         #game_state.suppress_warnings(True)  #Uncomment this line to suppress warnings.
 
