@@ -61,7 +61,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         unit deployments, and transmitting your intended deployments to the
         game engine.
         """
-        game_state = gamelib.GameState(self.config, turn_state)
+        game_state = gamelib.AdvancedGameState(self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
         #game_state.suppress_warnings(True)  #Uncomment this line to suppress warnings.
 
@@ -128,28 +128,21 @@ class AlgoStrategy(gamelib.AlgoCore):
             game_state.attempt_spawn(EMP, self.attacker_spawn_near, game_state.number_affordable(EMP))
         else:
             friendly_edges = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
-            available_spawns = self.filter_blocked_locations(friendly_edges, game_state)
-            spawn = self.rank_spawns(available_spawns, game_state)
+            spawn = self.rank_spawns(friendly_edges, game_state)
             if spawn != None:
                 game_state.attempt_spawn(PING, spawn, game_state.number_affordable(PING))
         # When should we get scramblers?
-
-    def filter_blocked_locations(self, locations, game_state):
-        filtered = []
-        for location in locations:
-            if not game_state.contains_stationary_unit(location):
-                filtered.append(location)
-        return filtered
 
     def rank_spawns(self, available_spawns, game_state):
         current_best_spawn = None
         current_lowest_damage = -1
         if len(available_spawns) > 0:
             for spawn_point in available_spawns:
-                damage = self.damage_taken(spawn_point, game_state)
-                if current_best_spawn == None or (damage != None and current_lowest_damage > damage):
-                    current_best_spawn = spawn_point
-                    current_lowest_damage = damage
+                if not game_state.contains_stationary_unit(spawn_point):
+                    damage = self.damage_taken(spawn_point, game_state)
+                    if current_best_spawn == None or (damage != None and current_lowest_damage > damage):
+                        current_best_spawn = spawn_point
+                        current_lowest_damage = damage
             return current_best_spawn
         return None
 
