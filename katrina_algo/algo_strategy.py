@@ -70,7 +70,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         self.pathfinder.initialize_map(game_state)
 
-        
+        self.check_for_switch(game_state)
 
         self.starter_strategy(game_state)
 
