@@ -136,7 +136,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         loc = [13, 0]
         unit = game_state.game_map.__getitem__(loc)
         units = {"D0" : [], "E0" : [], "F0" : [], "D1" : [], "E1" : [], "F1" : [],
-                "Efront1" : [], "Efront2" : [], "Efront3" : [], "Efront4" : []}
+                "Efront1" : [], "Efront2" : [], "Efront3" : [], "Efront4" : [],
+                "fline" : []}
 
         # get data on all of your squares
         try:
@@ -151,9 +152,11 @@ class AlgoStrategy(gamelib.AlgoCore):
                         unit_type = "F"
                     key = unit_type + str(elt.player_index)
 
-                    if(game_state.HALF_ARENA <= loc[1] and loc[1] < game_state.HALF_ARENA + 4):
+                    if(game_state.HALF_ARENA - 1 <= loc[1] and loc[1] < game_state.HALF_ARENA + 4):
                         # put the front two rows into lists based on the side
-                        if(loc[1] == game_state.HALF_ARENA):
+                        if(loc[1] == game_state.HALF_ARENA - 1):
+                            units["fline"].append([elt.x, elt.y])
+                        elif(loc[1] == game_state.HALF_ARENA):
                             units["Efront1"].append([elt.x, elt.y])
                         elif(loc[1] == game_state.HALF_ARENA + 1):
                             units["Efront2"].append([elt.x, elt.y])
