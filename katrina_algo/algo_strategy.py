@@ -81,8 +81,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         self.new_attackers(game_state)
 
-    # Here we make the C1 Logo!
-
     def new_defences(self, game_state):
         firewall_locations = [[0, 13], [1, 12],[26, 12], [27, 13]]
         for location in firewall_locations:
@@ -140,12 +138,13 @@ class AlgoStrategy(gamelib.AlgoCore):
                         unit_type = "F"
                     key = unit_type + str(elt.player_index)
 
-                    if(game_state.HALF_ARENA <= loc[1] and loc[1] < game_state.HALF_ARENA + 2):
+                    if(game_state.HALF_ARENA <= loc[1] and loc[1] < game_state.HALF_ARENA + 4):
                         # put the front two rows into lists based on the side
                         if(loc[0] < game_state.HALF_ARENA):
                             units["Efront1"].append((elt.x, elt.y))
-                        else:
+                        elif(loc[0] < game_state.HALF_ARENA + 1):
                             units["Efront2"].append((elt.x, elt.y))
+                        elif(loc[0] <
 
                     # put this unit into the dictionary
                     units[key].append(elt)
@@ -198,8 +197,12 @@ class AlgoStrategy(gamelib.AlgoCore):
                 game_state.attempt_spawn(FILTER, (27 - exit4[0], exit4[1]))
                 break
 
+        temp = self.attacker_spawn_near
+        self.attacker_spawn_near = self.attacker_spawn_far
+        self.attacker_spawn_far = temp
 
-    ##### END BRYCE's FUCNTIONS #####
+
+    ##### END BRYCE'S FUCNTIONS #####
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
