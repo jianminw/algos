@@ -118,12 +118,13 @@ class AlgoStrategy(gamelib.AlgoCore):
         game_state.attempt_remove(front1[-1])
 
     def new_defences(self, game_state):
-        firewall_locations = [[0, 13], [1, 12],[26, 12], [27, 13]]
+        firewall_locations = [[0, 13], [27, 13]]
         for location in firewall_locations:
             game_state.attempt_spawn(FILTER, location)
 
-        firewall_locations = [[2, 11], [4, 11], [6, 11], [10, 11],
-                              [14, 11], [19, 11], [21, 11], [23, 11], [25, 11]]
+        firewall_locations = [[1, 12], [2, 11], [4, 11], [6, 11], [8, 11], [12, 11]
+                              [14, 11], [19, 11], [21, 11], [23, 11], [25, 11],
+                              [26, 12]]
 
         for location in firewall_locations:
             game_state.attempt_spawn(DESTRUCTOR, location)
