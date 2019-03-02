@@ -44,6 +44,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def set_constraints(self):
         self.frontline_enemy_threshhold = 7
+        self.ping_deployment_threshhold = 7
 
 
 
@@ -102,10 +103,17 @@ class AlgoStrategy(gamelib.AlgoCore):
                 game_state.attempt_spawn(FILTER, location)
 
     def new_attackers(self, game_state):
+        attacker_spawn_location = [3, 10]
+        #check for which side is open, and deploy on other side?
         frontline_size = len(game_state.board_units["Efront1"]) + len(game_state.board_units["Efront2"])
         if frontline_size > self.frontline_enemy_threshhold:
-            while( game_state.number_affordable(EMP) > 1):
-                game_state.attempt_spawn(EMP, [3, 10])
+            game_state.attempt_spawn(EMP, attacker_spawn_location, game_state.number_affordable(EMP))
+        enemy_defenses = len(game_state.board_units["E1"])
+        enemy_defenses += len(game_state.board_units["D1"])
+        enemy_defenses += len(game_state.board_units["F1"])
+        if enemy_defenses < self.ping_deployment_threshhold:
+            game_state.attempt_spawn(EMP, attacker_spawn_location, game_state.number_affordable(PING))
+
         
 
     ####### Begin Bryce's functions ########
@@ -156,9 +164,9 @@ class AlgoStrategy(gamelib.AlgoCore):
             if(i < 4):
                 continue
             elif(i % 2 == 0 and game_state.can_spawn(ENCRYPTOR, (i, 9))):
-                locs.append[(i, 9)]
+                locs += [(i, 9)]
             elif(game_state.can_spawn(ENCRYPTOR, (25 - i//2, 9))):
-                locs.append[(25 - i//2, 9)]
+                locs += [(25 - i//2, 9)]
 
         return locs
 
@@ -175,7 +183,7 @@ class AlgoStrategy(gamelib.AlgoCore):
                 game_state.attempt_spawn(FILTER, (27 - exit1[0], exit1[1]))
                 break
 
-            elif(elt.x == exit2[0] and elt.y == exit[1]):
+            elif(elt.x == exit2[0] and elt.y == exit2[1]):
                 game_state.attempt_remove(exit2)
                 game_state.attempt_spawn(FILTER, (27 - exit2[0], exit2[1]))
                 break
