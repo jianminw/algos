@@ -39,7 +39,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         PING = config["unitInformation"][3]["shorthand"]
         EMP = config["unitInformation"][4]["shorthand"]
         SCRAMBLER = config["unitInformation"][5]["shorthand"]
-        
+
         self.set_constraints()
 
     def set_constraints(self):
@@ -81,7 +81,16 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         Finally deploy our information units to attack.
         """
+        self.filter_front(game_state)
         self.new_attackers(game_state)
+
+
+    def filter_front(self, game_state):
+        front1 = [(i, 13) for i in range(10)[2:]]
+        front2 = [(game_state.ARENA_SIZE - i - 2, 13) for i in range(10)[1:]]
+        for location in (front1+front2):
+            if game_state.can_spawn(FILTER, location):
+                game_state.attempt_spawn(FILTER, location)
 
     def new_defences(self, game_state):
         firewall_locations = [[0, 13], [1, 12],[26, 12], [27, 13]]
@@ -116,7 +125,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         else:
             game_state.attempt_spawn(EMP, self.attacker_spawn_near, game_state.number_affordable(EMP))
         # When should we get scramblers?
-        
+
 
     ####### Begin Bryce's functions ########
 
