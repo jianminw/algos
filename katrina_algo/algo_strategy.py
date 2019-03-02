@@ -61,7 +61,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         unit deployments, and transmitting your intended deployments to the
         game engine.
         """
-        game_state = gamelib.AdvancedGameState  (self.config, turn_state)
+        game_state = gamelib.AdvancedGameState(self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
         #game_state.suppress_warnings(True)  #Uncomment this line to suppress warnings.
 
@@ -92,9 +92,10 @@ class AlgoStrategy(gamelib.AlgoCore):
 
 
     def filter_front(self, game_state):
-        front1 = [(i, 13) for i in range(10)[2:]]
-        front2 = [(game_state.ARENA_SIZE - i - 2, 13) for i in range(10)[1:]]
-        for location in (front1+front2):
+        front1 = [(i, 13) for i in range(2, 26)]
+        if self.attacker_spawn_far[0] < 13.5:
+            front1.reverse()
+        for location in front1:
             game_state.attempt_spawn(FILTER, location)
 
     def new_defences(self, game_state):
@@ -112,6 +113,12 @@ class AlgoStrategy(gamelib.AlgoCore):
         for j in range(3, 24):
             location = [j, 11]
             game_state.attempt_spawn(FILTER, location)
+
+        if game_state.number_affordable(ENCRYPTOR) > 6:
+            encryt_locs = self.get_encrypt_locs(game_state)
+            good_locs = encryt_locs[:game_state.number_affordable(ENCRYPTOR) - 2]
+            game_state.attempt_spawn(ENCRYPTOR, good_locs)
+
 
     def new_attackers(self, game_state):
         #check for which side is open, and deploy on other side?
