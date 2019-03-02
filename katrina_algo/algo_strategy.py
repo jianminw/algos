@@ -39,6 +39,11 @@ class AlgoStrategy(gamelib.AlgoCore):
         PING = config["unitInformation"][3]["shorthand"]
         EMP = config["unitInformation"][4]["shorthand"]
         SCRAMBLER = config["unitInformation"][5]["shorthand"]
+        
+        self.set_constraints()
+
+    def set_constraints(self):
+        self.frontline_enemy_threshhold = 7
 
 
     def on_turn(self, turn_state):
@@ -62,12 +67,6 @@ class AlgoStrategy(gamelib.AlgoCore):
     strategy and can safely be replaced for your custom algo.
     """
     def starter_strategy(self, game_state):
-        """
-        Build the C1 logo. Calling this method first prioritises
-        resources to build and repair the logo before spending them
-        on anything else.
-        """
-        #self.build_c1_logo(game_state)
 
         """
         Then build additional defenses.
@@ -100,14 +99,12 @@ class AlgoStrategy(gamelib.AlgoCore):
             if game_state.can_spawn(FILTER, location):
                 game_state.attempt_spawn(FILTER, location)
 
-
-
-
     def new_attackers(self, game_state):
-        while( game_state.number_affordable(EMP) > 1):
-            game_state.attempt_spawn(EMP, [3, 10])
-
-
+        frontline_size = len(game_state.board_units["Efront1"]) + len(game_state.board_units["Efront2"])
+        if frontline_size > self.frontline_enemy_threshhold:
+            while( game_state.number_affordable(EMP) > 1):
+                game_state.attempt_spawn(EMP, [3, 10])
+        
 
     def deploy_attackers(self, game_state):
         """
