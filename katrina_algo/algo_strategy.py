@@ -106,9 +106,9 @@ class AlgoStrategy(gamelib.AlgoCore):
         attacker_spawn_location = [3, 10]
         #check for which side is open, and deploy on other side?
         frontline_size = len(game_state.board_units["Efront1"]) + len(game_state.board_units["Efront2"])
-        enemy_defenses = len(game_state.board_units["E1"])
-        enemy_defenses += len(game_state.board_units["D1"])
-        enemy_defenses += len(game_state.board_units["F1"])
+        enemy_defenses = frontline_size
+        enemy_defenses += len(game_state.board_units["Efront3"])
+        enemy_defenses += len(game_state.board_units["Efront4"])
         if frontline_size > self.frontline_enemy_threshhold:
             game_state.attempt_spawn(EMP, self.attacker_spawn_far, game_state.number_affordable(EMP))
         elif enemy_defenses < self.ping_deployment_threshhold:
