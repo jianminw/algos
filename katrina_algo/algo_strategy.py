@@ -95,27 +95,23 @@ class AlgoStrategy(gamelib.AlgoCore):
         front1 = [(i, 13) for i in range(10)[2:]]
         front2 = [(game_state.ARENA_SIZE - i - 2, 13) for i in range(10)[1:]]
         for location in (front1+front2):
-            if game_state.can_spawn(FILTER, location):
-                game_state.attempt_spawn(FILTER, location)
+            game_state.attempt_spawn(FILTER, location)
 
     def new_defences(self, game_state):
         firewall_locations = [[0, 13], [1, 12],[26, 12], [27, 13]]
         for location in firewall_locations:
-            if game_state.can_spawn(FILTER, location):
-                game_state.attempt_spawn(FILTER, location)
+            game_state.attempt_spawn(FILTER, location)
 
         firewall_locations = [[0, 13], [1, 12],[26, 12], [27, 13],
                              [2, 11], [6, 11], [10, 11],
                               [18, 11], [22, 11], [25, 11]]
 
         for location in firewall_locations:
-            if game_state.can_spawn(DESTRUCTOR, location):
-                game_state.attempt_spawn(DESTRUCTOR, location)
+            game_state.attempt_spawn(DESTRUCTOR, location)
 
         for j in range(3, 24):
             location = [j, 11]
-            if game_state.can_spawn(FILTER, location):
-                game_state.attempt_spawn(FILTER, location)
+            game_state.attempt_spawn(FILTER, location)
 
     def new_attackers(self, game_state):
         #check for which side is open, and deploy on other side?
