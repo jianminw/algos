@@ -200,6 +200,91 @@ class AlgoStrategy(gamelib.AlgoCore):
                 game_state.attempt_spawn(DESTRUCTOR, location)
 
 
+    ####### Begin Bryce's functions ########
+
+    def get_diagnostics(self, game_state):
+
+        # create an iterator to go through the map and store everything you find
+        game_state.game_map.__iter__()
+        loc = [13, 0]
+        unit = game_state.game_map.__getitem__(loc)
+        units = {"D0" : [], "E0" : [], "F0" : [], "D1" : [], "E1" : [], "F1" : [],
+                "Efront1" : [], "Efront2" : []}
+
+        # get data on all of your squares
+        try:
+            while(True):
+                # get the diagnostics
+                for elt in unit:
+                    if(elt.unit_type == DESTRUCTOR):
+                        unit_type = "D"
+                    elif(elt.unit_type == ENCRYPTOR):
+                        unit_type = "E"
+                    else:
+                        unit_type = "F"
+                    key = unit_type + str(elt.player_index)
+
+                    if(game_state.HALF_ARENA <= loc[1] and loc[1] < game_state.HALF_ARENA + 2):
+                        # put the front two rows into lists based on the side
+                        if(loc[0] < game_state.HALF_ARENA):
+                            units["Efront1"].append((elt.x, elt.y))
+                        else:
+                            units["Efront2"].append((elt.x, elt.y))
+
+                    # put this unit into the dictionary
+                    units[key].append(elt)
+
+                # move on to the next space
+                loc = game_state.game_map.__next__()
+                unit = game_state.game_map.__getitem__(loc)
+
+        except StopIteration:
+            game_state.board_units = units
+
+    # return list of encryptor locations
+    def get_encrypt_locs(self, game_state):
+        locs = []
+        for i in range(24):
+            if(i < 4):
+                continue
+            elif(i % 2 == 0 and game_state.can_spawn(ENCRYPTOR, (i, 9))):
+                locs.append[(i, 9)]
+            elif(game_state.can_spawn(ENCRYPTOR, (25 - i//2, 9))):
+                locs.append[(25 - i//2, 9))]
+
+        return locs
+
+    # switch attacking sides
+    def switch_sides(self, game_state, board_units):
+        exit1 = (2, 11)
+        exit2 = (25, 11)
+        exit3 = (3, 11)
+        exit4 = (24, 11)
+
+        for elt in board_units["F"]:
+            if(elt.x == exit1[0] and elt.y == exit1[1]):
+                game_state.attempt_remove(exit1)
+                game_state.attempt_spawn(FILTER, (27 - exit1[0], exit1[1]))
+                break
+
+            else if(elt.x == exit2[0] and elt.y == exit[1]):
+                game_state.attempt_remove(exit2)
+                game_state.attempt_spawn(FILTER, (27 - exit2[0], exit2[1]))
+                break
+
+            else if(elt.x == exit3[0] and elt.y == exit3[1]):
+                game_state.attempt_remove(exit3)
+                game_state.attempt_spawn(FILTER, (27 - exit3[0], exit3[1]))
+                break
+
+            else if(elt.x == exit4[0] and elt.y == exit4[1]):
+                game_state.attempt_remove(exit4)
+                game_state.attempt_spawn(FILTER, (27 - exit4[0], exit4[1]))
+                break
+
+
+    ##### END BRYCE's FUCNTIONS #####
+
 if __name__ == "__main__":
     algo = AlgoStrategy()
     algo.start()
